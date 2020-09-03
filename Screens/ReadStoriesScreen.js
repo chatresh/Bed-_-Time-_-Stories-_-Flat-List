@@ -1,5 +1,6 @@
 import React from 'react'; 
-import { StyleSheet, Text, View ,TextInput,Image,ScrollView,Button,FlatList} from 'react-native'; 
+import { StyleSheet, Text, View ,TextInput,Image,ScrollView,Button,FlatList,TouchableOpacity
+} from 'react-native'; 
 import { SearchBar } from 'react-native-elements';
 import AppHeader from '../Screens/AppHeader'
 import db from '../config'
@@ -28,7 +29,7 @@ export default class ReadStoriesScreen extends React.Component{
     }
 
 
-    Search_Filter_Function = async() =>{
+    search_Filter_Function = async() =>{
          if(this.state.search.toUpperCase() === "B"){
 
       const search = this.state.search
@@ -45,9 +46,6 @@ export default class ReadStoriesScreen extends React.Component{
           })
 
         })
-
-        console.log(this.state.all_Transactions[1]);
-
     }
     
     }
@@ -55,8 +53,8 @@ export default class ReadStoriesScreen extends React.Component{
 
     render(){
     
-    
-         return(
+    if(this.state.search===''){
+     return(
             <View style={{backgroundColor:"pink",height:700,flex: 1}}>
             <AppHeader/>
             <SearchBar 
@@ -68,7 +66,51 @@ export default class ReadStoriesScreen extends React.Component{
            
             />
          
+             <FlatList
+          data={this.state.allTransactions}
+          renderItem={({item})=>(
+             <View style={{borderBottomWidth: 2}}>
+              <Text>{"Author: " + item.Author}</Text>
+              <Text>{"StoryTitle: " + item.storyTitle}</Text>
+              </View>
+         
+          )}
+          keyExtractor= {(item, index)=> index.toString()}
+          onEndReached ={this.fetchMoreTransactions}
+          onEndReachedThreshold={0.7}
+        /> 
+    
+            
+            </View>
+        )
+    } else if(this.state.search!==''){
+      return(
+            <View style={{backgroundColor:"pink",height:700,flex: 1}}>
+            <AppHeader/>
+            <SearchBar 
+            onChangeText={(search)=>{
+            this.setState({search:search})
+            }}
+            value={this.state.search}
+            placeHolder = "Search a Book"
            
+            />
+         
+          <TouchableOpacity style={{
+            backgroundColor:"lightgreen",
+            marginLeft:100,
+            marginTop:30,
+            borderRadius:22,
+            borderWidth:4,
+            width:100,
+            height:45
+                        }} 
+          onPress={()=>{
+            this.search_Filter_Function()
+          }}
+          >
+          <Text style={{textAlign:"center",marginTop:5}}>Search</Text>
+           </TouchableOpacity>
 
              <FlatList
           data={this.state.allTransactions}
@@ -87,7 +129,8 @@ export default class ReadStoriesScreen extends React.Component{
             
             </View>
         )
-     
+    }
+
     }
 }
 
